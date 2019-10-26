@@ -4,10 +4,10 @@ import act.controller.Controller;
 import org.osgl.mvc.annotation.GetAction;
 
 @Controller
-public class HealthController {
+public class HomeController {
 
-    @GetAction("/health")
-    public String health (String asd) {
-        return "Running";
+    @GetAction("/")
+    public String home() {
+        return "Home";
     }
 }
