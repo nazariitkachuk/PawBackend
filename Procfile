@@ -1,3 +1,1 @@
-web: cd target/dist
-tar xzf *.gz
-./run
+web: java -jar target/paw-backend.jar
