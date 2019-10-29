@@ -2,36 +2,36 @@ package com.paw.controller;
 
 
 import act.controller.Controller;
-import act.controller.annotation.UrlContext;
-import com.paw.dto.TableDto;
-import com.paw.model.TableModel;
-import com.paw.service.TableService;
-import com.paw.service.TableServiceImpl;
+import act.db.jpa.JPADao;
+import com.paw.model.Table;
 import org.osgl.mvc.annotation.GetAction;
 import org.osgl.mvc.annotation.PostAction;
 import org.osgl.mvc.result.NotFound;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
+import javax.inject.Inject;
 import java.util.List;
 
 @Controller
 public class TableController {
 
-    private TableService tableService = new TableServiceImpl();
+    private static final Logger LOG = LoggerFactory.getLogger(TableController.class);
 
-    @PostAction("/table/{asd}/{qwe}")
-    public TableModel addTable(String asd, String qwe) {
-        TableDto tableDto = new TableDto();
-        tableDto.setName(asd);
-        tableDto.setId(Integer.valueOf(qwe));
-        System.out.println(tableDto);
-        return tableService.addTable(tableDto);
+    @Inject
+    private JPADao<Long, Table> dao;
+
+    @PostAction("/table")
+    public Table addTable(Table table) {
+        LOG.info("Dodano tablice: " + table.toString());
+        return dao.save(table);
+
     }
 
     @GetAction("/table")
-    public List<TableDto> getTables() {
+    public List<Table> getTables() {
         try {
-            return tableService.getTables();
+            return dao.findAllAsList();
         } catch (NullPointerException e) {
             throw new NotFound();
         }
