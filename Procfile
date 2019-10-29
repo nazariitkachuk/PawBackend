@@ -1,1 +1,1 @@
-web: java -jar /app/tmp/cache/.m2/repository/com/paw/PawBackend/1.0-SNAPSHOT/PawBackend-1.0-SNAPSHOT.jar
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* PawBackend
