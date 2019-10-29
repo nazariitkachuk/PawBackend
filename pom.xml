@@ -21,18 +21,14 @@
     <dependencies>
         <dependency>
             <groupId>org.actframework</groupId>
-            <artifactId>act</artifactId>
-            <version>1.8.22</version>
+            <artifactId>act-hibernate</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.actframework</groupId>
-            <artifactId>act-ebean</artifactId>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.178</version>
-        </dependency>
+
         <dependency>
             <groupId>ma.glasnost.orika</groupId>
             <artifactId>orika-core</artifactId>
