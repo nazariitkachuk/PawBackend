@@ -1,1 +1,1 @@
-web: java -jar target/PawBackend-1.0-SNAPSHOT.jar
+web: sh -x ./run_prod -Dhttp.port=${PORT}
