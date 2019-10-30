@@ -10,12 +10,13 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <app.entry>com.paw.PawBackend</app.entry>
     </properties>
 
     <parent>
         <groupId>org.actframework</groupId>
         <artifactId>act-starter-parent</artifactId>
-        <version>1.8.22.0</version>
+        <version>1.8.28.1</version>
     </parent>
 
     <dependencies>
@@ -36,15 +37,16 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>paw-backend</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.paw.PawBackend</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
