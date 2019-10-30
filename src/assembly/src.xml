@@ -1,25 +1,23 @@
-<assembly
-        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-  http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<!--<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--        xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">-->
 
-    <!-- TODO: a jarjar format would be better -->
-    <id>dep</id>
-    <formats>
-        <format>jar</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <outputDirectory>./</outputDirectory>
-        </fileSet>
-    </fileSets>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>./</outputDirectory>
-            <unpack>true</unpack>
-            <scope>runtime</scope>
-        </dependencySet>
-    </dependencySets>
-</assembly>
+<!--    &lt;!&ndash; TODO: a jarjar format would be better &ndash;&gt;-->
+<!--    <id>src</id>-->
+<!--    <formats>-->
+<!--        <format>jar</format>-->
+<!--    </formats>-->
+<!--    <includeBaseDirectory>false</includeBaseDirectory>-->
+<!--    <fileSets>-->
+<!--        <fileSet>-->
+<!--            <outputDirectory>./</outputDirectory>-->
+<!--        </fileSet>-->
+<!--    </fileSets>-->
+<!--    <dependencySets>-->
+<!--        <dependencySet>-->
+<!--            <useProjectAttachments>true</useProjectAttachments>-->
+<!--            <outputDirectory>./</outputDirectory>-->
+<!--            <unpack>true</unpack>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependencySet>-->
+<!--    </dependencySets>-->
+<!--</assembly>-->
