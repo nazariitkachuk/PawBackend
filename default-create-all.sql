@@ -1,4 +1,4 @@
-create table table_model (
+create pawTable table_model (
   name                          varchar(255)
 );
 
