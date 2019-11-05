@@ -1,18 +1,19 @@
 package com.paw.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@javax.persistence.Table(name = "tables")
-public class Table {
+@javax.persistence.Table(name = "paw_tables")
+public class PawTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
+    @OneToMany(targetEntity = PawList.class, fetch = FetchType.EAGER)
+    private List<PawList> pawLists = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -28,6 +29,18 @@ public class Table {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<PawList> getPawLists() {
+        return pawLists;
+    }
+
+    public void setPawLists(List<PawList> pawLists) {
+        this.pawLists = pawLists;
+    }
+
+    public void addPawList(PawList pawList) {
+        this.pawLists.add(pawList);
     }
 
     @Override
