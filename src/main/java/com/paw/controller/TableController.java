@@ -5,6 +5,7 @@ import act.controller.Controller;
 import act.db.jpa.JPADao;
 import com.paw.model.PawList;
 import com.paw.model.PawTable;
+import org.osgl.mvc.annotation.DeleteAction;
 import org.osgl.mvc.annotation.GetAction;
 import org.osgl.mvc.annotation.PostAction;
 import org.osgl.mvc.annotation.PutAction;
@@ -60,6 +61,11 @@ public class TableController {
         }
     }
 
+    @DeleteAction("/table/{id}")
+    public void deleteTableById(int id) {
+        tableDao.deleteById(id);
+    }
+
     @PostAction("table/{id}/list")
     public PawTable addNewList(int id, PawList pawList) {
         PawTable tempTable = tableDao.findById(id);
@@ -68,6 +74,7 @@ public class TableController {
         tempTable.addPawList(pawList);
         return tableDao.save(tempTable);
     }
+
 
     @GetAction("table/{id}/list")
     public List<PawList> getPawListListOnTable(int id) {
