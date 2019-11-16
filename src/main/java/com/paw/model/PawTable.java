@@ -12,6 +12,7 @@ public class PawTable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
+    private String owner;
     @OneToMany(targetEntity = PawList.class, fetch = FetchType.EAGER)
     private List<PawList> pawLists = new ArrayList<>();
 
@@ -41,6 +42,14 @@ public class PawTable {
 
     public void addPawList(PawList pawList) {
         this.pawLists.add(pawList);
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     @Override
