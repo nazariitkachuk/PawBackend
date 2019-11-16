@@ -3,6 +3,7 @@ package com.paw.controller;
 
 import act.controller.Controller;
 import act.db.jpa.JPADao;
+import com.paw.model.PawCard;
 import com.paw.model.PawList;
 import com.paw.model.PawTable;
 import org.osgl.mvc.annotation.DeleteAction;
@@ -31,6 +32,9 @@ public class TableController extends AuthenticatedController{
     @Inject
     private JPADao<Integer, PawList> listDao;
 
+    @Inject
+    private JPADao<Integer, PawCard> cardDao;
+
     @PostAction("/table")
     public PawTable addTable(PawTable pawTable) {
         pawTable.setOwner(me.email);
@@ -46,7 +50,7 @@ public class TableController extends AuthenticatedController{
                 return tableDao.findAllAsList().stream()
                         .filter(table -> table.getOwner().equals(me.email()))
                         .collect(Collectors.toList());
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 throw new NotFound();
             }
         } else {
@@ -66,7 +70,7 @@ public class TableController extends AuthenticatedController{
 
     @PutAction("/table/{id}")
     public PawTable updateTableName(int id, PawTable pawTable) {
-        if (id != pawTable.getId()) {
+        if (id != pawTable.getTableId()) {
             throw new BadRequest("Id in body do not match id in path");
         } else {
             PawTable tempTable = tableDao.findById(id);
@@ -84,6 +88,7 @@ public class TableController extends AuthenticatedController{
     public void deleteTableById(int id) {
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
+            LOG.info("Usunięto tablice o id : {}", tempTable.getTableId());
             tableDao.deleteById(id);
         } else {
             throw new Unauthorized();
@@ -94,7 +99,7 @@ public class TableController extends AuthenticatedController{
     public PawTable addNewList(int id, PawList pawList) {
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
-            LOG.info("Dodano liste {} do tablicy o id : {}", pawList.toString(), tempTable.getId());
+            LOG.info("Dodano liste {} do tablicy o id : {}", pawList.toString(), tempTable.getTableId());
             listDao.save(pawList);
             tempTable.addPawList(pawList);
             return tableDao.save(tempTable);
@@ -102,7 +107,6 @@ public class TableController extends AuthenticatedController{
             throw new Unauthorized();
         }
     }
-
 
     @GetAction("table/{id}/list")
     public List<PawList> getPawListListOnTable(int id) {
@@ -114,4 +118,59 @@ public class TableController extends AuthenticatedController{
         }
     }
 
+    @PostAction("table/{id}/list/{listId}/card")
+    public PawTable addNewCard(int id, int listId, PawCard pawCard) {
+        PawTable tempTable = tableDao.findById(id);
+        if(tempTable.getOwner().equals(me.email())) {
+            PawList tempPawlist = listDao.findById(listId);
+            cardDao.save(pawCard);
+            tempPawlist.addCardToCardList(pawCard);
+            listDao.save(tempPawlist);
+            return tableDao.findById(id);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @PutAction("table/{id}/list/{listId}/card/{cardId}")
+    public PawTable editCard(int id, int listId,int cardId, PawCard pawCard) {
+        PawTable tempTable = tableDao.findById(id);
+        if(tempTable.getOwner().equals(me.email())) {
+            PawCard tempPawCard = cardDao.findById(cardId);
+            if(!(pawCard.getDescription() == null) && !pawCard.getDescription().equals("")) {
+                tempPawCard.setDescription(pawCard.getDescription());
+            }
+            if(!(pawCard.getName() == null) && !pawCard.getName().equals("")) {
+                tempPawCard.setName(pawCard.getName());
+            }
+            cardDao.save(tempPawCard);
+            return tableDao.findById(id);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+//    @DeleteAction("table/{id}/list/{listId}/card/{cardId}")
+//    public PawTable deleteCard(int id, int listId, int cardId) {
+//        PawTable tempTable = tableDao.findById(id);
+//        if(tempTable.getOwner().equals(me.email())) {
+//            PawList tempPawList = listDao.findById(listId);
+//            tempPawList.deletedFromPawList(cardId);
+//            listDao.save(tempPawList);
+//            cardDao.deleteById(cardId);
+//            return tableDao.findById(id);
+//        } else {
+//            throw new Unauthorized();
+//        }
+//    }
+
+    @GetAction("table/{id}/list/{listId}/card/{cardId}")
+    public PawCard getCardDetails(int id, int listId, int cardId) {
+        PawTable tempTable = tableDao.findById(id);
+        if(tempTable.getOwner().equals(me.email())) {
+            return cardDao.findById(cardId);
+        } else {
+            throw new Unauthorized();
+        }
+    }
 }
