@@ -1,21 +1,26 @@
 package com.paw.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "paw_lists")
 public class PawList {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int listId;
     private String name;
+    @OneToMany(targetEntity = PawCard.class, fetch = FetchType.EAGER)
+    private List<PawCard> pawCardList = new ArrayList<>();
 
-    public int getId() {
-        return id;
+    public int getListId() {
+        return listId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setListId(int listId) {
+        this.listId = listId;
     }
 
     public String getName() {
@@ -26,10 +31,27 @@ public class PawList {
         this.name = name;
     }
 
+    public List<PawCard> getPawCardList() {
+        return pawCardList;
+    }
+
+    public void setPawCardList(List<PawCard> pawCardList) {
+        this.pawCardList = pawCardList;
+    }
+
+    public void addCardToCardList(PawCard pawCard) {
+        this.pawCardList.add(pawCard);
+    }
+
+    public void deletedFromPawList(int cardId) {
+        PawCard pawCard = this.pawCardList.stream().filter(card -> card.getCardId() == cardId).collect(Collectors.toList()).get(0);
+        this.pawCardList.remove(pawCard);
+    }
+
     @Override
     public String toString() {
         return "PawList{" +
-                "id=" + id +
+                "id=" + listId +
                 ", name='" + name + '\'' +
                 '}';
     }

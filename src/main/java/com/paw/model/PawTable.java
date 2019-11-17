@@ -10,18 +10,18 @@ public class PawTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int tableId;
     private String name;
     private String owner;
     @OneToMany(targetEntity = PawList.class, fetch = FetchType.EAGER)
     private List<PawList> pawLists = new ArrayList<>();
 
-    public int getId() {
-        return id;
+    public int getTableId() {
+        return tableId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
     }
 
     public String getName() {
@@ -44,6 +44,8 @@ public class PawTable {
         this.pawLists.add(pawList);
     }
 
+    public void deletedFromPawList(PawList pawList) {this.pawLists.remove(pawList);}
+
     public String getOwner() {
         return owner;
     }
@@ -55,7 +57,7 @@ public class PawTable {
     @Override
     public String toString() {
         return "Table{" +
-                "id=" + id +
+                "id=" + tableId +
                 ", name='" + name + '\'' +
                 '}';
     }
