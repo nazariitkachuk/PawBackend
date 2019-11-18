@@ -9,7 +9,6 @@ import org.osgl.mvc.annotation.PostAction;
 
 import javax.inject.Inject;
 
-import static act.controller.Controller.Util.redirect;
 
 @NoAuthentication
 public class LoginController {
@@ -17,10 +16,10 @@ public class LoginController {
     @Inject
     private User.Dao userDao;
 
-
     @PostAction("/login")
     public CustomResponse login(String email, String password, H.Flash flash, ActionContext context) {
         User user = userDao.authenticate(email, password);
+        context.cookie("com-session").httpOnly(false);
         if (null == user) {
             flash.error("cannot find user by email and password combination");
             return new CustomResponse(400, "cannot find user by email and password combination");
