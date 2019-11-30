@@ -132,6 +132,17 @@ public class TableController extends AuthenticatedController{
         }
     }
 
+    @GetAction("table/{id}/list/{listId}/card")
+    public List<PawCard> getCartList(int id, int listId) {
+        PawTable tempTable = tableDao.findById(id);
+        if(tempTable.getOwner().equals(me.email())) {
+            PawList tempPawlist = listDao.findById(listId);
+            return tempPawlist.getPawCardList();
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
     @PutAction("table/{id}/list/{listId}/card/{cardId}")
     public PawTable editCard(int id, int listId,int cardId, PawCard pawCard) {
         PawTable tempTable = tableDao.findById(id);
