@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,8 +101,7 @@ public class TableController extends AuthenticatedController{
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
             LOG.info("Dodano liste {} do tablicy o id : {}", pawList.toString(), tempTable.getTableId());
-            listDao.save(pawList);
-            tempTable.addPawList(pawList);
+            tempTable.addIdToList(listDao.save(pawList).getListId());
             return tableDao.save(tempTable);
         } else {
             throw new Unauthorized();
@@ -112,7 +112,7 @@ public class TableController extends AuthenticatedController{
     public List<PawList> getPawListListOnTable(int id) {
         PawTable table = tableDao.findById(id);
         if(table.getOwner().equals(me.email())) {
-            return table.getPawLists();
+            return  table.getPawLists().stream().map(listId -> listDao.findById(listId)).collect(Collectors.toList());
         } else {
             throw new Unauthorized();
         }
@@ -123,8 +123,7 @@ public class TableController extends AuthenticatedController{
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
             PawList tempPawlist = listDao.findById(listId);
-            cardDao.save(pawCard);
-            tempPawlist.addCardToCardList(pawCard);
+            tempPawlist.addIdToList(cardDao.save(pawCard).getCardId());
             listDao.save(tempPawlist);
             return tableDao.findById(id);
         } else {
@@ -137,25 +136,25 @@ public class TableController extends AuthenticatedController{
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
             PawList tempPawlist = listDao.findById(listId);
-            return tempPawlist.getPawCardList();
+            return tempPawlist.getPawCardList().stream().map(cardId -> cardDao.findById(cardId)).collect(Collectors.toList());
         } else {
             throw new Unauthorized();
         }
     }
 
     @PutAction("table/{id}/list/{listId}/card/{cardId}")
-    public PawTable editCard(int id, int listId,int cardId, PawCard pawCard) {
+    public PawCard editCard(int id, int listId,int cardId, PawCard pawCard) {
         PawTable tempTable = tableDao.findById(id);
         if(tempTable.getOwner().equals(me.email())) {
             PawCard tempPawCard = cardDao.findById(cardId);
+
             if(!(pawCard.getDescription() == null) && !pawCard.getDescription().equals("")) {
                 tempPawCard.setDescription(pawCard.getDescription());
             }
             if(!(pawCard.getName() == null) && !pawCard.getName().equals("")) {
                 tempPawCard.setName(pawCard.getName());
             }
-            cardDao.save(tempPawCard);
-            return tableDao.findById(id);
+            return cardDao.save(tempPawCard);
         } else {
             throw new Unauthorized();
         }

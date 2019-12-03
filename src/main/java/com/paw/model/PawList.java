@@ -12,8 +12,8 @@ public class PawList {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int listId;
     private String name;
-    @OneToMany(targetEntity = PawCard.class, fetch = FetchType.EAGER)
-    private List<PawCard> pawCardList = new ArrayList<>();
+    @ElementCollection
+    private List<Integer> pawCardList = new ArrayList<>();
 
     public int getListId() {
         return listId;
@@ -31,21 +31,16 @@ public class PawList {
         this.name = name;
     }
 
-    public List<PawCard> getPawCardList() {
+    public List<Integer> getPawCardList() {
         return pawCardList;
     }
 
-    public void setPawCardList(List<PawCard> pawCardList) {
+    public void addIdToList(int id){
+        pawCardList.add(id);
+    }
+
+    public void setPawCardList(List<Integer> pawCardList) {
         this.pawCardList = pawCardList;
-    }
-
-    public void addCardToCardList(PawCard pawCard) {
-        this.pawCardList.add(pawCard);
-    }
-
-    public void deletedFromPawList(int cardId) {
-        PawCard pawCard = this.pawCardList.stream().filter(card -> card.getCardId() == cardId).collect(Collectors.toList()).get(0);
-        this.pawCardList.remove(pawCard);
     }
 
     @Override

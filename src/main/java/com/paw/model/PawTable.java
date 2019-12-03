@@ -3,6 +3,7 @@ package com.paw.model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @javax.persistence.Table(name = "paw_tables")
@@ -13,8 +14,8 @@ public class PawTable {
     private int tableId;
     private String name;
     private String owner;
-    @OneToMany(targetEntity = PawList.class, fetch = FetchType.EAGER)
-    private List<PawList> pawLists = new ArrayList<>();
+    @ElementCollection
+    private List<Integer> pawLists = new ArrayList<>();
 
     public int getTableId() {
         return tableId;
@@ -32,19 +33,17 @@ public class PawTable {
         this.name = name;
     }
 
-    public List<PawList> getPawLists() {
+    public List<Integer> getPawLists() {
         return pawLists;
     }
 
-    public void setPawLists(List<PawList> pawLists) {
+    public void setPawLists(List<Integer> pawLists) {
         this.pawLists = pawLists;
     }
 
-    public void addPawList(PawList pawList) {
-        this.pawLists.add(pawList);
+    public void addIdToList(int id) {
+        pawLists.add(id);
     }
-
-    public void deletedFromPawList(PawList pawList) {this.pawLists.remove(pawList);}
 
     public String getOwner() {
         return owner;
