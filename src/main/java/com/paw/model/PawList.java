@@ -39,6 +39,10 @@ public class PawList {
         pawCardList.add(id);
     }
 
+    public void deleteIdFromList(int id) {
+        pawCardList.remove(pawCardList.indexOf(id));
+    }
+
     public void setPawCardList(List<Integer> pawCardList) {
         this.pawCardList = pawCardList;
     }

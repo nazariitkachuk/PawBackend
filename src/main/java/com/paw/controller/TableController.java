@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,19 +159,19 @@ public class TableController extends AuthenticatedController{
         }
     }
 
-//    @DeleteAction("table/{id}/list/{listId}/card/{cardId}")
-//    public PawTable deleteCard(int id, int listId, int cardId) {
-//        PawTable tempTable = tableDao.findById(id);
-//        if(tempTable.getOwner().equals(me.email())) {
-//            PawList tempPawList = listDao.findById(listId);
-//            tempPawList.deletedFromPawList(cardId);
-//            listDao.save(tempPawList);
-//            cardDao.deleteById(cardId);
-//            return tableDao.findById(id);
-//        } else {
-//            throw new Unauthorized();
-//        }
-//    }
+    @DeleteAction("table/{id}/list/{listId}/card/{cardId}")
+    public PawList deleteCard(int id, int listId, int cardId) {
+        PawTable tempTable = tableDao.findById(id);
+        if(tempTable.getOwner().equals(me.email())) {
+        PawList pawList = listDao.findById(listId);
+        pawList.deleteIdFromList(cardId);
+        listDao.save(pawList);
+        cardDao.deleteById(cardId);
+        return pawList;
+        } else {
+            throw new Unauthorized();
+        }
+    }
 
     @GetAction("table/{id}/list/{listId}/card/{cardId}")
     public PawCard getCardDetails(int id, int listId, int cardId) {
