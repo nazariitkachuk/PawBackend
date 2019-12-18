@@ -353,10 +353,11 @@ public class TableController extends AuthenticatedController {
         if (tempTable.getOwner().equals(me.email())) {
             PawCard pawCard = cardDao.findById(cardId);
             comment.setAuthorName(me.email);
-            pawCard.addIdToCommentList(commentDao.save(comment).getCommentId());
+            comment = commentDao.save(comment);
+            pawCard.addIdToCommentList(comment.getCommentId());
 
             History history = new History();
-            history.setHistory("Dodano komentarz do karty od uzytkownika" + comment.getAuthorName());
+            history.setHistory("Dodano komentarz do karty od uzytkownika " + comment.getAuthorName());
             history = historyDao.save(history);
             pawCard.addIdToHistoryList(history.getHistoryId());
 
@@ -413,7 +414,7 @@ public class TableController extends AuthenticatedController {
             commentDao.deleteById(commentId);
 
             History history = new History();
-            history.setHistory("Usunięto komentarz od" + comment.getAuthorName());
+            history.setHistory("Usunięto komentarz od " + comment.getAuthorName());
             history = historyDao.save(history);
             pawCard.addIdToHistoryList(history.getHistoryId());
             return cardDao.save(pawCard);
