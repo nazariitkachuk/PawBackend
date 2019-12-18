@@ -1,5 +1,7 @@
 package com.paw.model;
 
+import jline.internal.Nullable;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,16 @@ public class PawCard {
     private int cardId;
     private String name;
     private String description;
+    @Nullable
+    private boolean status = true;
+    @Nullable
+    private int belongsToListId = 0;
     @ElementCollection
     List<Integer> commentIdList = new ArrayList<>();
     @ElementCollection
     List<Integer> attachmentIdList = new ArrayList<>();
+    @ElementCollection
+    List<Integer> historyIdList = new ArrayList<>();
 
     public int getCardId() {
         return cardId;
@@ -23,6 +31,22 @@ public class PawCard {
 
     public void setCardId(int cardId) {
         this.cardId = cardId;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public int getBelongsToListId() {
+        return belongsToListId;
+    }
+
+    public void setBelongsToListId(int belongsToListId) {
+        this.belongsToListId = belongsToListId;
     }
 
     public String getName() {
@@ -67,6 +91,22 @@ public class PawCard {
 
     public void deleteIdFromAttachmentList(int id) {
         attachmentIdList.remove(attachmentIdList.indexOf(id));
+    }
+
+    public void addIdToHistoryList(int id) {
+        historyIdList.add(id);
+    }
+
+    public void deleteIdFromHistoryList(int id) {
+        historyIdList.remove(historyIdList.indexOf(id));
+    }
+
+    public List<Integer> getHistoryIdList() {
+        return historyIdList;
+    }
+
+    public void setHistoryIdList(List<Integer> historyIdList) {
+        this.historyIdList = historyIdList;
     }
 
     public void setAttachmentIdList(List<Integer> attachmentIdList) {

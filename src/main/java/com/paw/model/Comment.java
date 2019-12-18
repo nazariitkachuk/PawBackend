@@ -1,6 +1,8 @@
 package com.paw.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comment")
@@ -11,6 +13,8 @@ public class Comment {
     int commentId;
     String authorName;
     String content;
+    @ElementCollection
+    List<Integer> attachmentIdList = new ArrayList<>();
 
     public int getCommentId() {
         return commentId;
@@ -30,6 +34,14 @@ public class Comment {
 
     public String getContent() {
         return content;
+    }
+
+    public void addIdToAttachmentList(int id) {
+        attachmentIdList.add(id);
+    }
+
+    public void deleteIdFromAttachmentList(int id) {
+        attachmentIdList.remove(attachmentIdList.indexOf(id));
     }
 
     public void setContent(String content) {

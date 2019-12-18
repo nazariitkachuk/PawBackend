@@ -39,6 +39,9 @@ public class TableController extends AuthenticatedController {
     @Inject
     private JPADao<Integer, Comment> commentDao;
 
+    @Inject
+    private JPADao<Integer, History> historyDao;
+
 
     @PostAction("/table")
     public PawTable addTable(PawTable pawTable) {
@@ -127,6 +130,10 @@ public class TableController extends AuthenticatedController {
         PawTable tempTable = tableDao.findById(id);
         if (tempTable.getOwner().equals(me.email())) {
             PawList tempPawlist = listDao.findById(listId);
+            History history = new History();
+            history.setHistory("Utworzono kartę " + pawCard.getName());
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
             tempPawlist.addIdToList(cardDao.save(pawCard).getCardId());
             listDao.save(tempPawlist);
             return tableDao.findById(id);
@@ -151,13 +158,18 @@ public class TableController extends AuthenticatedController {
         PawTable tempTable = tableDao.findById(id);
         if (tempTable.getOwner().equals(me.email())) {
             PawCard tempPawCard = cardDao.findById(cardId);
+            History history = new History();
 
             if (!(pawCard.getDescription() == null) && !pawCard.getDescription().equals("")) {
                 tempPawCard.setDescription(pawCard.getDescription());
+                history.setHistory("Zmieniono opis karty na  " + pawCard.getDescription());
             }
             if (!(pawCard.getName() == null) && !pawCard.getName().equals("")) {
                 tempPawCard.setName(pawCard.getName());
+                history.setHistory("Zmieniono nazwe karty na  " + pawCard.getName());
             }
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
             return cardDao.save(tempPawCard);
         } else {
             throw new Unauthorized();
@@ -173,6 +185,58 @@ public class TableController extends AuthenticatedController {
             listDao.save(pawList);
             cardDao.deleteById(cardId);
             return pawList;
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @PostAction("table/{id}/list/{listId}/card/{cardId}/archive")
+    public PawCard archiveCard(int id, int listId, int cardId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            PawList pawList = listDao.findById(listId);
+            pawList.deleteIdFromList(cardId);
+            listDao.save(pawList);
+            PawCard card = cardDao.findById(cardId);
+            card.setStatus(false);
+            card.setBelongsToListId(listId);
+
+            History history = new History();
+            history.setHistory("Zarchiwizowano karte " + card.getName());
+            history = historyDao.save(history);
+            card.addIdToHistoryList(history.getHistoryId());
+            return cardDao.save(card);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @GetAction("table/{id}/card/archive")
+    public List<PawCard> getArchiveCard(int id) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            return cardDao.findAllAsList().stream().filter(card -> !card.isStatus()).collect(Collectors.toList());
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @DeleteAction("table/{id}/card/{cardId}/archive")
+    public PawCard unarchiveCard(int id, int cardId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            PawCard card = cardDao.findById(cardId);
+            card.setStatus(true);
+            PawList pawList = listDao.findById(card.getBelongsToListId());
+            pawList.addIdToList(cardId);
+            listDao.save(pawList);
+
+            History history = new History();
+            history.setHistory("Odarchiwizowano kartę " + card.getName());
+            history = historyDao.save(history);
+            card.addIdToHistoryList(history.getHistoryId());
+
+            return cardDao.save(card);
         } else {
             throw new Unauthorized();
         }
@@ -195,6 +259,11 @@ public class TableController extends AuthenticatedController {
             PawCard pawCard = cardDao.findById(cardId);
 
             pawCard.addIdToAttachmentList(attachmentDao.save(attachment).getFileId());
+
+            History history = new History();
+            history.setHistory("Dodano załącznik do karty o nazwie " + attachment.getFileName());
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
 
             return cardDao.save(pawCard);
         } else {
@@ -230,13 +299,51 @@ public class TableController extends AuthenticatedController {
             PawCard pawCard = cardDao.findById(cardId);
             pawCard.deleteIdFromAttachmentList(fileId);
             attachmentDao.deleteById(fileId);
+
+            History history = new History();
+            history.setHistory("Usunięto załącznik z karty");
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
+
             return cardDao.save(pawCard);
         } else {
             throw new Unauthorized();
         }
     }
 
+    @GetAction("table/{id}/allattachment")
+    public List<Attachment> getAllAttachment(int id) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            return attachmentDao.findAllAsList();
+        } else {
+            throw new Unauthorized();
+        }
+    }
 
+    @PostAction("table/{id}/list/{listId}/card/{cardId}/comment/{commentId}/attachment/{fileId}")
+    public Comment addAttachmentToComment(int id, int listId, int cardId, int commentId, int fileId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            Comment comment = commentDao.findById(commentId);
+            comment.addIdToAttachmentList(fileId);
+            return commentDao.save(comment);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @DeleteAction("table/{id}/list/{listId}/card/{cardId}/comment/{commentId}/attachment/{fileId}")
+    public Comment deleteAttachmentFromComment(int id, int listId, int cardId, int commentId, int fileId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            Comment comment = commentDao.findById(commentId);
+            comment.deleteIdFromAttachmentList(fileId);
+            return commentDao.save(comment);
+        } else {
+            throw new Unauthorized();
+        }
+    }
 
 
 
@@ -247,6 +354,12 @@ public class TableController extends AuthenticatedController {
             PawCard pawCard = cardDao.findById(cardId);
             comment.setAuthorName(me.email);
             pawCard.addIdToCommentList(commentDao.save(comment).getCommentId());
+
+            History history = new History();
+            history.setHistory("Dodano komentarz do karty od uzytkownika" + comment.getAuthorName());
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
+
             return cardDao.save(pawCard);
         } else {
             throw new Unauthorized();
@@ -296,8 +409,24 @@ public class TableController extends AuthenticatedController {
         if (tempTable.getOwner().equals(me.email())) {
             PawCard pawCard = cardDao.findById(cardId);
             pawCard.deleteCommentIdFromList(commentId);
+            Comment comment = commentDao.findById(commentId);
             commentDao.deleteById(commentId);
+
+            History history = new History();
+            history.setHistory("Usunięto komentarz od" + comment.getAuthorName());
+            history = historyDao.save(history);
+            pawCard.addIdToHistoryList(history.getHistoryId());
             return cardDao.save(pawCard);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @GetAction("table/{id}/list/{listId}/card/{cardId}/history")
+    public List<History> getCardHistory(int id, int listId, int cardId, int commentId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            return cardDao.findById(cardId).getHistoryIdList().stream().map(historyId -> historyDao.findById(historyId)).collect(Collectors.toList());
         } else {
             throw new Unauthorized();
         }
