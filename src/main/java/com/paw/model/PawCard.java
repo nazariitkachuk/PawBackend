@@ -24,6 +24,8 @@ public class PawCard {
     List<Integer> attachmentIdList = new ArrayList<>();
     @ElementCollection
     List<Integer> historyIdList = new ArrayList<>();
+    @ElementCollection
+    List<Integer> labelList = new ArrayList<>();
 
     public int getCardId() {
         return cardId;
@@ -101,12 +103,28 @@ public class PawCard {
         historyIdList.remove(historyIdList.indexOf(id));
     }
 
+    public void addIdToLabelList(int id) {
+        labelList.add(id);
+    }
+
+    public void deleteIdFromLabelList(int id) {
+        labelList.remove(labelList.indexOf(id));
+    }
+
     public List<Integer> getHistoryIdList() {
         return historyIdList;
     }
 
     public void setHistoryIdList(List<Integer> historyIdList) {
         this.historyIdList = historyIdList;
+    }
+
+    public List<Integer> getLabelList() {
+        return labelList;
+    }
+
+    public void setLabelList(List<Integer> labelList) {
+        this.labelList = labelList;
     }
 
     public void setAttachmentIdList(List<Integer> attachmentIdList) {

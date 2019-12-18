@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,13 +43,15 @@ public class TableController extends AuthenticatedController {
     @Inject
     private JPADao<Integer, History> historyDao;
 
+    @Inject JPADao<Integer, Colour> colourDao;
+
 
     @PostAction("/table")
     public PawTable addTable(PawTable pawTable) {
         pawTable.setOwner(me.email);
+        pawTable.setColoursList(basicColoursList());
         LOG.info("Dodano tablice: " + pawTable.toString());
         return tableDao.save(pawTable);
-
     }
 
     @GetAction("/table")
@@ -183,6 +186,11 @@ public class TableController extends AuthenticatedController {
             PawList pawList = listDao.findById(listId);
             pawList.deleteIdFromList(cardId);
             listDao.save(pawList);
+            PawCard card = cardDao.findById(cardId);
+            card.setHistoryIdList(new ArrayList<>());
+            card.setAttachmentIdList(new ArrayList<>());
+            card.setCommentIdList(new ArrayList<>());
+            card.setLabelList(new ArrayList<>());
             cardDao.deleteById(cardId);
             return pawList;
         } else {
@@ -431,5 +439,71 @@ public class TableController extends AuthenticatedController {
         } else {
             throw new Unauthorized();
         }
+    }
+
+    @GetAction("table/{id}/label")
+    public List<Colour> getLabel(int id) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            return tempTable.getColoursList().stream().map(colourId -> colourDao.findById(colourId)).collect(Collectors.toList());
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @PutAction("table/{id}/label/{labelId}/{newName}")
+    public List<Colour> editLabel(int id, int labelId, String newName) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            Colour colour = colourDao.findById(labelId);
+            colour.setColourName(newName);
+            colourDao.save(colour);
+            return tempTable.getColoursList().stream().map(colourId -> colourDao.findById(colourId)).collect(Collectors.toList());
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @PostAction("table/{id}/list/{listId}/card/{cardId}/label/{labelId}")
+    public PawCard addLabelToCard(int id, int listId, int cardId, int labelId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            PawCard card = cardDao.findById(cardId);
+            card.addIdToLabelList(labelId);
+            return cardDao.save(card);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @DeleteAction("table/{id}/list/{listId}/card/{cardId}/label/{labelId}")
+    public PawCard deleteLabelToCard(int id, int listId, int cardId, int labelId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            PawCard card = cardDao.findById(cardId);
+            card.deleteIdFromLabelList(labelId);
+            return cardDao.save(card);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+
+
+    private List<Integer> basicColoursList() {
+        List<Integer> list = new ArrayList<>();
+        Colour blue = new Colour("", "#375e97");
+        list.add(colourDao.save(blue).getColourId());
+        Colour red = new Colour("", "#ff0000");
+        list.add(colourDao.save(red).getColourId());
+        Colour green = new Colour("", "#339933");
+        list.add(colourDao.save(green).getColourId());
+        Colour orange = new Colour("", "#fb6542");
+        list.add(colourDao.save(orange).getColourId());
+        Colour yellow = new Colour("", "#ffbb00");
+        list.add(colourDao.save(yellow).getColourId());
+        Colour purple = new Colour("", "#7800bd");
+        list.add(colourDao.save(purple).getColourId());
+        return list;
     }
 }

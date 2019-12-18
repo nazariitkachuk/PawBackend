@@ -3,7 +3,6 @@ package com.paw.model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @javax.persistence.Table(name = "paw_tables")
@@ -16,6 +15,9 @@ public class PawTable {
     private String owner;
     @ElementCollection
     private List<Integer> pawLists = new ArrayList<>();
+
+    @ElementCollection
+    private List<Integer> coloursList = new ArrayList<>();
 
     public int getTableId() {
         return tableId;
@@ -51,6 +53,14 @@ public class PawTable {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public List<Integer> getColoursList() {
+        return coloursList;
+    }
+
+    public void setColoursList(List<Integer> coloursList) {
+        this.coloursList = coloursList;
     }
 
     @Override
