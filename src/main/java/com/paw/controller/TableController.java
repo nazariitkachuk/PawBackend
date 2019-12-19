@@ -106,6 +106,58 @@ public class TableController extends AuthenticatedController {
         }
     }
 
+    
+    @PostAction("table/{id}/archive")
+    public PawTable archiveTable(int id, int tableId) {
+        
+            PawTable tempTable = tableDao.findById(id);
+            if (tempTable.getOwner().equals(me.email())) {
+                tempTable.deleteIdFromList(id);
+                tempTable.setStatus(false);
+                tempTable.setBelongsToListId(id);
+                tableDao.save(tempTable);
+
+                History history = new History();
+                history.setHistory("Zarchiwizowano tablice " + tempTable.getName());
+                history = historyDao.save(history);
+                tempTable.addIdToHistoryList(history.getHistoryId());
+                return tableDao.save(tempTable);
+            } else {
+                throw new Unauthorized();
+            }
+        
+    }
+    
+    @DeleteAction("table/{id}/archive")
+    public PawTable unarchiveTable(int id, int tableId) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            tempTable = tableDao.findById(tableId);
+            tempTable.setStatus(true);
+            tempTable.addIdToList(tableId);
+            
+
+            History history = new History();
+            history.setHistory("Odarchiwizowano tablicę " + tempTable.getName());
+            history = historyDao.save(history);
+            tempTable.addIdToHistoryList(history.getHistoryId());
+
+            return tableDao.save(tempTable);
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
+    @GetAction("table/{id}/archive")
+    public List<PawTable> getArchiveTable(int id) {
+        PawTable tempTable = tableDao.findById(id);
+        if (tempTable.getOwner().equals(me.email())) {
+            return tableDao.findAllAsList().stream().filter(table -> !table.isStatus()).collect(Collectors.toList());
+        } else {
+            throw new Unauthorized();
+        }
+    }
+
     @PostAction("table/{id}/list")
     public PawTable addNewList(int id, PawList pawList) {
         PawTable tempTable = tableDao.findById(id);
